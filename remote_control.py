@@ -68,6 +68,8 @@ try:
                         enabled = False
                     if button == 8:
                         print('Shutting down remote control')
+                        if motion.robotIsWakeUp():
+                            motion.rest()
                         exit()
                 if e.type == pygame.locals.JOYAXISMOTION and motion.robotIsWakeUp() and enabled:
                     x_turn, y_turn = dead_zone(joy.get_axis(1), -joy.get_axis(0), 0.05)
