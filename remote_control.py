@@ -3,6 +3,7 @@ import math
 from pygame import locals
 from naoqi import ALProxy
 import ConfigParser
+from optparse import OptionParser
 
 
 def dead_zone(x_, y_, epsilon):
@@ -19,9 +20,15 @@ except:
     print("Error initializing pygame")
     raise
 
+o_parser = OptionParser()
+o_parser.add_option("-f", "--file", help="Config file", dest="c_file", type="string", default="config.ini")
+o_parser.add_option("-j", "--joystick", help="Joystick to use", dest="js_num", type="int", default=0)
+(opts, args_) = o_parser.parse_args()
+c_file = opts.c_file
+js_num = opts.js_num
 c_parser = ConfigParser.ConfigParser()
 
-if not c_parser.read('config.ini'):
+if not c_parser.read(c_file):
     print("Error opening the config file")
     exit()
 
@@ -44,7 +51,7 @@ except:
     raise
 
 try:
-    joy = pygame.joystick.Joystick(0)
+    joy = pygame.joystick.Joystick(js_num)
     joy.init()
     print("Enabled joystick %s" % joy.get_name())
 
