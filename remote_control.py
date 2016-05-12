@@ -2,6 +2,7 @@ import pygame
 import math
 from pygame import locals
 from naoqi import ALProxy
+import ConfigParser
 
 
 def dead_zone(x_, y_, epsilon):
@@ -11,7 +12,6 @@ def dead_zone(x_, y_, epsilon):
         y_ = 0.
     return x_, y_
 
-
 try:
     pygame.init()
     pygame.joystick.init()
@@ -19,8 +19,16 @@ except:
     print("Error initializing pygame")
     raise
 
-NAO_IP = "192.168.1.102"
-NAO_PORT = 9559
+c_parser = ConfigParser.ConfigParser()
+
+if not c_parser.read('config.ini'):
+    print("Error opening the config file")
+    exit()
+
+NAO_IP = c_parser.get('robot', 'ip')
+NAO_PORT = c_parser.getint('robot', 'port')
+
+key_map = {int(key): value for key, value in (c_parser.items('key_bindings'))}
 
 started = False
 enabled = False
@@ -42,36 +50,38 @@ try:
     while True:
         for e in pygame.event.get():
             if not enabled:
-                if e.type == pygame.locals.JOYBUTTONDOWN and e.dict['button'] == 9:
+                if e.type == pygame.locals.JOYBUTTONDOWN and key_map[e.dict['button']] == 'enable':
                     print('Remote control enabled')
                     enabled = True
             else:
-                if e.type == pygame.locals.JOYBUTTONUP and e.dict['button'] == 6:
+                if e.type == pygame.locals.JOYBUTTONUP and key_map[e.dict['button']] == 'start':
                     started = False
                     print('Control of the motion of the robot disabled')
 
                 if e.type == pygame.locals.JOYBUTTONDOWN:
                     button = e.dict['button']
-                    if button == 6:
+                    if key_map[button] == 'start':
                         started = True
                         print('Control of the motion of the robot enabled')
-                    if button == 0:
+                    if key_map[button] == 'wake_up':
                         motion.wakeUp()
-                    if button == 1:
-                        pass
-                    if button == 2:
-                        pass
-                    if button == 3:
+                    if key_map[button] == 'rest':
                         motion.rest()
-                    if button == 9:
+                    if key_map[button] == 'enable':
                         print('Remote control disabled')
                         enabled = False
-                    if button == 8:
+                    if key_map[button] == 'exit':
                         print('Shutting down remote control')
                         if motion.robotIsWakeUp():
                             motion.rest()
                         exit()
-                if e.type == pygame.locals.JOYAXISMOTION and motion.robotIsWakeUp() and enabled:
+                    else:
+                        try:
+                            behaviour.runBehaviour(key_map[button])
+                        except:
+                            print('Behaviour %s not installed' % key_map[button])
+                            raise
+                if e.type == pygame.locals.JOYAXISMOTION and motion.robotIsWakeUp() and started:
                     x_turn, y_turn = dead_zone(joy.get_axis(1), -joy.get_axis(0), 0.05)
                     theta = math.atan2(y_turn, x_turn)
                     x, y = dead_zone(-joy.get_axis(3), -joy.get_axis(2), 0.05)
