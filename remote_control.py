@@ -37,6 +37,7 @@ try:
     behaviour = ALProxy("ALBehaviorManager", NAO_IP, NAO_PORT)
     motion = ALProxy("ALMotion", NAO_IP, NAO_PORT)
     memory = ALProxy("ALMemory", NAO_IP, NAO_PORT)
+    tts = ALProxy("ALTextToSpeech", NAO_IP, NAO_PORT)
     print("Connected to the robot")
 except:
     print("Error connecting to NAOqi on the robot")
@@ -75,6 +76,10 @@ try:
                         if motion.robotIsWakeUp():
                             motion.rest()
                         exit()
+                    elif key_map[button] == 'say':
+                        tts.say('Hello! I am NAO robot. I am here to inform you that I suck.')
+                    elif key_map[button] == 'none':
+                        pass
                     else:
                         try:
                             behaviour.runBehavior(key_map[button])
