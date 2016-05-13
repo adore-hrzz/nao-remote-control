@@ -74,10 +74,10 @@ try:
                         print('Control of the motion of the robot enabled')
                     if not started:
                         if key_map[button] == 'exit':
-                        print('Shutting down remote control')
-                        if motion.robotIsWakeUp():
-                            motion.rest()
-                        exit()
+                            print('Shutting down remote control')
+                            if motion.robotIsWakeUp():
+                                motion.rest()
+                            exit()
                     elif key_map[button] == 'wake_up':
                         motion.wakeUp()
                     elif key_map[button] == 'rest':
