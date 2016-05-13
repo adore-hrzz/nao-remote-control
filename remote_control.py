@@ -64,6 +64,7 @@ try:
             else:
                 if e.type == pygame.locals.JOYBUTTONUP and key_map[e.dict['button']] == 'start':
                     started = False
+                    motion.stopMove()
                     print('Control of the motion of the robot disabled')
 
                 if e.type == pygame.locals.JOYBUTTONDOWN:
@@ -71,6 +72,12 @@ try:
                     if key_map[button] == 'start':
                         started = True
                         print('Control of the motion of the robot enabled')
+                    if not started:
+                        if key_map[button] == 'exit':
+                        print('Shutting down remote control')
+                        if motion.robotIsWakeUp():
+                            motion.rest()
+                        exit()
                     elif key_map[button] == 'wake_up':
                         motion.wakeUp()
                     elif key_map[button] == 'rest':
@@ -78,11 +85,6 @@ try:
                     elif key_map[button] == 'enable':
                         print('Remote control disabled')
                         enabled = False
-                    elif key_map[button] == 'exit':
-                        print('Shutting down remote control')
-                        if motion.robotIsWakeUp():
-                            motion.rest()
-                        exit()
                     elif key_map[button] == 'say':
                         tts.say('Hello! I am NAO robot. I am here to inform you that I suck.')
                     elif key_map[button] == 'none':
