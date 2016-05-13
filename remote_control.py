@@ -72,7 +72,7 @@ try:
                     if key_map[button] == 'start':
                         started = True
                         print('Control of the motion of the robot enabled')
-                    if not started:
+                    elif not started:
                         if key_map[button] == 'exit':
                             print('Shutting down remote control')
                             if motion.robotIsWakeUp():
@@ -91,7 +91,8 @@ try:
                         pass
                     else:
                         try:
-                            behaviour.runBehavior(key_map[button])
+                            if motion.robotIsWakeUp():
+                                behaviour.runBehavior(key_map[button])
                         except:
                             print('Behaviour %s not installed' % key_map[button])
                             raise
