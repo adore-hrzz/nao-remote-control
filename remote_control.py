@@ -96,7 +96,7 @@ try:
                             print('Behaviour %s not installed' % key_map[button])
                             raise
                 if e.type == pygame.locals.JOYAXISMOTION and motion.robotIsWakeUp() and started:
-                    x_turn, y_turn = dead_zone(joy.get_axis(1), -joy.get_axis(0), 0.05)
+                    x_turn, y_turn = dead_zone(-joy.get_axis(1), -joy.get_axis(0), 0.05)
                     theta = math.atan2(y_turn, x_turn)
                     x, y = dead_zone(-joy.get_axis(3), -joy.get_axis(2), 0.05)
                     motion.moveToward(x, y, theta/math.pi)
