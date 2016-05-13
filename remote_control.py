@@ -72,6 +72,7 @@ try:
                     if key_map[button] == 'start':
                         started = True
                         print('Control of the motion of the robot enabled')
+                        motion.setStiffnesses("Head", 1.0)
                     elif not started:
                         if key_map[button] == 'exit':
                             print('Shutting down remote control')
@@ -85,6 +86,7 @@ try:
                     elif key_map[button] == 'enable':
                         print('Remote control disabled')
                         enabled = False
+                        started = False
                     elif key_map[button] == 'say':
                         tts.say('Hello! I am NAO robot. I am here to inform you that I suck.')
                     elif key_map[button] == 'none':
@@ -101,6 +103,11 @@ try:
                     theta = math.atan2(y_turn, x_turn)
                     x, y = dead_zone(-joy.get_axis(3), -joy.get_axis(2), 0.05)
                     motion.moveToward(x, y, theta/math.pi)
+                if e.type == pygame.locals.JOYHATMOTION and started:
+                    yaw, pitch = e.dict['value']
+
+                    motion.changeAngles("HeadYaw", -yaw*0.087, 0.1)
+                    motion.changeAngles("HeadPitch", -pitch*0.087, 0.1)
 
 except KeyboardInterrupt:
     exit()
